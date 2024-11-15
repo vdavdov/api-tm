@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Создание таблицы users -->
+    <changeSet id="1" author="vdavdov">
+        <createTable tableName="users">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Создание таблицы tasks -->
+    <changeSet id="2" author="vdavdov">
+        <createTable tableName="tasks">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="author_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assignee_id" type="BIGINT"/>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <!-- Создание внешних ключей -->
+        <addForeignKeyConstraint
+                baseTableName="tasks"
+                baseColumnNames="author_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_tasks_author"/>
+
+        <addForeignKeyConstraint
+                baseTableName="tasks"
+                baseColumnNames="assignee_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_tasks_assignee"/>
+    </changeSet>
+
+    <!-- Создание таблицы comments -->
+    <changeSet id="3" author="vdavdov">
+        <createTable tableName="comments">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="task_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment_text" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Создание внешних ключей -->
+        <addForeignKeyConstraint
+                baseTableName="comments"
+                baseColumnNames="task_id"
+                referencedTableName="tasks"
+                referencedColumnNames="id"
+                constraintName="fk_comments_task"/>
+
+        <addForeignKeyConstraint
+                baseTableName="comments"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_comments_user"/>
+    </changeSet>
+
+</databaseChangeLog>
