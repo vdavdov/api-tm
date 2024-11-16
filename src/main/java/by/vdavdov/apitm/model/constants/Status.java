@@ -1,4 +1,4 @@
-package by.vdavdov.apitm.model.constant;
+package by.vdavdov.apitm.model.constants;
 
 public enum Status {
     PENDING,

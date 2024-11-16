@@ -1,7 +1,7 @@
-package by.vdavdov.apitm.model.entity;
+package by.vdavdov.apitm.model.entities;
 
-import by.vdavdov.apitm.model.constant.Priority;
-import by.vdavdov.apitm.model.constant.Status;
+import by.vdavdov.apitm.model.constants.Priority;
+import by.vdavdov.apitm.model.constants.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public class Task {
     private User author;
 
     @ManyToOne
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "assignee_id")
     private User assignee;
 
     @CreationTimestamp

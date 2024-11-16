@@ -3,10 +3,22 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <!-- Создание таблицы users -->
+    <!--roles-->
     <changeSet id="1" author="vdavdov">
+        <createTable tableName="roles">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="role_name" type="VARCHAR(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!--users-->
+    <changeSet id="2" author="vdavdov">
         <createTable tableName="users">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
@@ -17,18 +29,63 @@
             <column name="email" type="VARCHAR(255)">
                 <constraints unique="true" nullable="false"/>
             </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="created_at" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
     </changeSet>
 
-    <!-- Создание таблицы tasks -->
-    <changeSet id="2" author="vdavdov">
+    <!--Инсерты ADMIN и USER -->
+    <changeSet id="3" author="vdavdov">
+        <insert tableName="roles">
+            <column name="id" valueNumeric="1"/>
+            <column name="role_name" value="ADMIN"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="id" valueNumeric="2"/>
+            <column name="role_name" value="USER"/>
+        </insert>
+    </changeSet>
+
+    <!--users_roles-->
+    <changeSet id="4" author="vdavdov">
+        <createTable tableName="users_roles">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!--user_id -->
+        <addForeignKeyConstraint
+                baseTableName="users_roles"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_users_roles_user"/>
+
+        <!--role_id -->
+        <addForeignKeyConstraint
+                baseTableName="users_roles"
+                baseColumnNames="role_id"
+                referencedTableName="roles"
+                referencedColumnNames="id"
+                constraintName="fk_users_roles_role"/>
+    </changeSet>
+
+    <!--tasks -->
+    <changeSet id="5" author="vdavdov">
         <createTable tableName="tasks">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+
             <column name="title" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -49,7 +106,7 @@
             <column name="updated_at" type="TIMESTAMP"/>
         </createTable>
 
-        <!-- Создание внешних ключей -->
+        <!--foreign-->
         <addForeignKeyConstraint
                 baseTableName="tasks"
                 baseColumnNames="author_id"
@@ -65,8 +122,8 @@
                 constraintName="fk_tasks_assignee"/>
     </changeSet>
 
-    <!-- Создание таблицы comments -->
-    <changeSet id="3" author="vdavdov">
+    <!--comments -->
+    <changeSet id="6" author="vdavdov">
         <createTable tableName="comments">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
@@ -75,7 +132,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="user_id" type="BIGINT">
-
                 <constraints nullable="false"/>
             </column>
             <column name="comment_text" type="TEXT">
@@ -86,7 +142,6 @@
             </column>
         </createTable>
 
-        <!-- Создание внешних ключей -->
         <addForeignKeyConstraint
                 baseTableName="comments"
                 baseColumnNames="task_id"

@@ -1,4 +1,4 @@
-package by.vdavdov.apitm.model.entity;
+package by.vdavdov.apitm.model.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
