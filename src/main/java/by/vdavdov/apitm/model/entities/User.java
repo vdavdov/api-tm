@@ -19,10 +19,8 @@ import java.util.Date;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
-
-    @Column(nullable = false, name = "username")
-    private String username;
 
     @Column(nullable = false, name = "email")
     private String email;

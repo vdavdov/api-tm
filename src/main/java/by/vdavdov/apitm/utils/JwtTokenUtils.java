@@ -29,34 +29,27 @@ public class JwtTokenUtils {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
         claims.put("roles", rolesList);
-        claims.put("email", userDetails.getUsername());
-        claims.put("password", userDetails.getPassword());
 
-        Date issuedAt = new Date();
-        Date expiredDate = new Date(issuedAt.getTime() + jwtLifetime.toMillis());
-
+        Date issuedDate = new Date();
+        Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
-                .setIssuedAt(issuedAt)
+                .setIssuedAt(issuedDate)
                 .setExpiration(expiredDate)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
-    public String getUsernameFromToken(String token) {
-        return getClaimsFromToken(token).getSubject();
+    public String getEmail(String token) {
+        return getAllClaimsFromToken(token).getSubject();
     }
 
-    public List<String> getRolesFromToken(String token) {
-        return getClaimsFromToken(token).get("roles", List.class);
+    public List<String> getRoles(String token) {
+        return getAllClaimsFromToken(token).get("roles", List.class);
     }
 
-    public String getEmailFromToken(String token) {
-        return getClaimsFromToken(token).get("email", String.class);
-    }
-
-    private Claims getClaimsFromToken(String token) {
+    private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)

@@ -8,7 +8,7 @@ import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
-public class MainController {
+public class TestController {
 
     @GetMapping("/unsecured")
     public String unsecured() {

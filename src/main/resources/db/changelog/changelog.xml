@@ -8,7 +8,7 @@
     <!--roles-->
     <changeSet id="1" author="vdavdov">
         <createTable tableName="roles">
-            <column name="id" type="BIGINT">
+            <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="role_name" type="VARCHAR(50)">
@@ -20,11 +20,8 @@
     <!--users-->
     <changeSet id="2" author="vdavdov">
         <createTable tableName="users">
-            <column name="id" type="BIGINT">
+            <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="username" type="VARCHAR(255)">
-                <constraints unique="true" nullable="false"/>
             </column>
             <column name="email" type="VARCHAR(255)">
                 <constraints unique="true" nullable="false"/>
@@ -43,21 +40,21 @@
     <changeSet id="3" author="vdavdov">
         <insert tableName="roles">
             <column name="id" valueNumeric="1"/>
-            <column name="role_name" value="ADMIN"/>
+            <column name="role_name" value="ROLE_ADMIN"/>
         </insert>
         <insert tableName="roles">
             <column name="id" valueNumeric="2"/>
-            <column name="role_name" value="USER"/>
+            <column name="role_name" value="ROLE_USER"/>
         </insert>
     </changeSet>
 
     <!--users_roles-->
     <changeSet id="4" author="vdavdov">
         <createTable tableName="users_roles">
-            <column name="user_id" type="BIGINT">
+            <column name="user_id" type="serial">
                 <constraints nullable="false"/>
             </column>
-            <column name="role_id" type="BIGINT">
+            <column name="role_id" type="serial">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -82,7 +79,7 @@
     <!--tasks -->
     <changeSet id="5" author="vdavdov">
         <createTable tableName="tasks">
-            <column name="id" type="BIGINT">
+            <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
@@ -125,7 +122,7 @@
     <!--comments -->
     <changeSet id="6" author="vdavdov">
         <createTable tableName="comments">
-            <column name="id" type="BIGINT">
+            <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="task_id" type="BIGINT">
