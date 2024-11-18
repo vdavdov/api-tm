@@ -33,20 +33,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/secured").authenticated()
-                        .requestMatchers("/info").authenticated()
-                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().permitAll())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(handling -> handling
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
-                //todo requestMatchers("api/v1/**").hasRole("ADMIN")
-                // todo docker compose  +
         return http.build();
-
     }
 
     @Bean
