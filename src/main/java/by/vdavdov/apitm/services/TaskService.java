@@ -10,11 +10,15 @@ import by.vdavdov.apitm.repositories.TaskRepository;
 import by.vdavdov.apitm.utils.JwtTokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -84,6 +88,20 @@ public class TaskService {
                 taskDto.getDescription(),
                 task.get().getAuthor().getEmail(),
                 taskDto.getAssigneeEmail()));
+    }
+
+    public ResponseEntity<?> getTasksByAssignee(@RequestParam String userEmail,
+                                                @RequestParam int page,
+                                                @RequestParam int size,
+                                                @RequestParam String priority,
+                                                @RequestParam String status) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Task> tasks = taskRepository.findTasksByAssigneeEmail(userEmail, priority, status, pageRequest);
+        if (tasks.isEmpty()) {
+            return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), "Task not found"), HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(tasks.getContent());
     }
 
     public String getTokenFromRequest(HttpServletRequest request) {

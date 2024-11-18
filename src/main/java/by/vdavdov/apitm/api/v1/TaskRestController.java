@@ -19,7 +19,7 @@ public class TaskRestController {
             summary = "Создает новую задачу",
             description = "В качестве email автора использует емайл создателя"
     )
-    @PostMapping("/api/v1/task/create")
+    @PostMapping("/api/v1/tasks")
     public ResponseEntity<?> createNewTask(@RequestBody TaskDto taskDto, HttpServletRequest request) {
         return taskService.createNewTask(taskDto, request);
     }
@@ -28,9 +28,23 @@ public class TaskRestController {
             summary = "Изменить существующую задачу по айди",
             description = "Изменить существующую задачу по айди, задачу может менять только автор, исполнитель или админ"
     )
-    @PutMapping("api/v1/task/update")
+    @PutMapping("api/v1/tasks")
     public ResponseEntity<?> updateTask(@RequestBody TaskDto taskDto, HttpServletRequest request) {
         return taskService.updateTask(taskDto, request);
     }
+
+    @Operation(
+            summary = "Получить все задачи исполнителя/автора",
+            description = "Получить все задачи исполнителя/автора по его емейлу, с пагинацией"
+    )
+    @GetMapping("api/v1/tasks")
+    public ResponseEntity<?> getTasksByAssignee(@RequestParam String userEmail,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "5") int limit,
+                                                @RequestParam(required = false) String priority,
+                                                @RequestParam(required = false) String status) {
+        return taskService.getTasksByAssignee(userEmail, page, limit, priority, status);
+    }
+
 
 }
