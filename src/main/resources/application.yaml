@@ -2,7 +2,7 @@ server:
   port: 8080
 jwt:
   secret: 383jf23zae2j9322fj39f39ffuckkk9r5632fjwt
-  lifetime: 30m
+  lifetime: 50m
 spring:
   application:
     name: api-tm
