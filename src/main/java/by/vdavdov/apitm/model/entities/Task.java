@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.Collection;
 import java.util.Date;
 
 @Entity
@@ -54,5 +55,13 @@ public class Task {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @ManyToMany
+    @JoinTable(
+            name = "tasks_comments",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "comment_id")
+    )
+    private Collection<Comment> comments;
 
 }

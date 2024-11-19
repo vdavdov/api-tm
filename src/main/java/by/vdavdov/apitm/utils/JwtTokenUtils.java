@@ -3,6 +3,7 @@ package by.vdavdov.apitm.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -54,5 +55,9 @@ public class JwtTokenUtils {
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public String getTokenFromRequest(HttpServletRequest request) {
+        return request.getHeader("Authorization").substring(7);
     }
 }

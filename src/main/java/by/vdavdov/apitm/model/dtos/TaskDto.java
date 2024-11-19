@@ -1,8 +1,13 @@
 package by.vdavdov.apitm.model.dtos;
 
+import by.vdavdov.apitm.model.entities.Comment;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Collection;
 
 @Data
+@NoArgsConstructor
 public class TaskDto {
     private Long id;
     private String title;
@@ -11,13 +16,5 @@ public class TaskDto {
     private String priority;
     private String assigneeEmail;
     private String authorEmail;
-
-    public TaskDto(Long id, String title, String description, String status, String priority, String assigneeEmail) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.status = status;
-        this.priority = priority;
-        this.assigneeEmail = assigneeEmail;
-    }
+    private Collection<CommentDto> comments;
 }

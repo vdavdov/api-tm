@@ -8,6 +8,7 @@ import by.vdavdov.apitm.model.dtos.TaskDto;
 import by.vdavdov.apitm.model.entities.Task;
 import by.vdavdov.apitm.repositories.TaskRepository;
 import by.vdavdov.apitm.utils.JwtTokenUtils;
+import by.vdavdov.apitm.utils.ConverterDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserService userService;
     private final JwtTokenUtils jwtTokenUtils;
+    private final ConverterDto converterDto;
 
     public ResponseEntity<?> createNewTask(@RequestBody TaskDto taskDto, HttpServletRequest request) {
         Task task = new Task();
@@ -43,7 +45,7 @@ public class TaskService {
         task.setStatus(Status.valueOf(taskDto.getStatus()));
         task.setAuthor(userService
                 .findByEmail(jwtTokenUtils
-                        .getEmail(getTokenFromRequest(request))).get());
+                        .getEmail(jwtTokenUtils.getTokenFromRequest(request))).get());
         Task save = taskRepository.save(task);
         return ResponseEntity.ok(new NewTaskDto(
                 String.valueOf(save.getId()),
@@ -55,7 +57,7 @@ public class TaskService {
     }
 
     public ResponseEntity<?> updateTask(@RequestBody TaskDto taskDto, HttpServletRequest request) {
-        String token = getTokenFromRequest(request);
+        String token = jwtTokenUtils.getTokenFromRequest(request);
         String emailFromRequest = jwtTokenUtils.getEmail(token);
         String roleFromRequest = jwtTokenUtils.getRoles(token).get(0);
 
@@ -102,12 +104,12 @@ public class TaskService {
             return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), "Task not found"), HttpStatus.NOT_FOUND);
         }
 
-        return ResponseEntity.ok(tasks.getContent());
+        return ResponseEntity.ok(converterDto.convertToDtoPage(tasks).getContent());
     }
 
     @Transactional
     public ResponseEntity<?> deleteTask(@PathVariable Long id, HttpServletRequest request) {
-        String token = getTokenFromRequest(request);
+        String token = jwtTokenUtils.getTokenFromRequest(request);
 
         if(jwtTokenUtils.getRoles(token).contains("ROLE_ADMIN")) {
             if(taskRepository.findById(id).isPresent()) {
@@ -120,8 +122,14 @@ public class TaskService {
         } return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), "You can't delete task"), HttpStatus.FORBIDDEN);
     }
 
-    public String getTokenFromRequest(HttpServletRequest request) {
-        return request.getHeader("Authorization").substring(7);
+
+
+    public Optional<Task> findTaskById(Long id) {
+        return taskRepository.findById(id);
+    }
+
+    public void save(Task task) {
+        taskRepository.save(task);
     }
 
 }
