@@ -9,16 +9,17 @@ import by.vdavdov.apitm.model.entities.Task;
 import by.vdavdov.apitm.repositories.TaskRepository;
 import by.vdavdov.apitm.utils.JwtTokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -96,12 +97,27 @@ public class TaskService {
                                                 @RequestParam String priority,
                                                 @RequestParam String status) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Task> tasks = taskRepository.findTasksByAssigneeEmail(userEmail, priority, status, pageRequest);
+        Page<Task> tasks = taskRepository.findTasksByUserEmail(userEmail, priority, status, pageRequest);
         if (tasks.isEmpty()) {
             return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), "Task not found"), HttpStatus.NOT_FOUND);
         }
 
         return ResponseEntity.ok(tasks.getContent());
+    }
+
+    @Transactional
+    public ResponseEntity<?> deleteTask(@PathVariable Long id, HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+
+        if(jwtTokenUtils.getRoles(token).contains("ROLE_ADMIN")) {
+            if(taskRepository.findById(id).isPresent()) {
+                Task task = taskRepository.findById(id).get();
+                taskRepository.deleteById(id);
+                return ResponseEntity.ok(task);
+            } else {
+                return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), "Task not found"), HttpStatus.NOT_FOUND);
+            }
+        } return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), "You can't delete task"), HttpStatus.FORBIDDEN);
     }
 
     public String getTokenFromRequest(HttpServletRequest request) {

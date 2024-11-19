@@ -46,5 +46,9 @@ public class TaskRestController {
         return taskService.getTasksByAssignee(userEmail, page, limit, priority, status);
     }
 
+    @DeleteMapping("api/v1/tasks/{id}")
+    public ResponseEntity<?> deleteTask(@PathVariable Long id, HttpServletRequest request) {
+        return taskService.deleteTask(id, request);
+    }
 
 }
