@@ -49,7 +49,7 @@ class AuthServiceTestIT extends BaseTest {
         // then
         Assertions.assertNotNull(response);
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        Assertions.assertTrue(response.getBody() instanceof DataError);
+        Assertions.assertInstanceOf(DataError.class, response.getBody());
         DataError errorResponse = (DataError) response.getBody();
         Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), errorResponse.getStatus());
         Assertions.assertEquals(RestConstants.PASSWORD_NOT_MATCH, errorResponse.getMessage());
@@ -67,7 +67,7 @@ class AuthServiceTestIT extends BaseTest {
         // then
         Assertions.assertNotNull(response);
         Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        Assertions.assertTrue(response.getBody() instanceof DataError);
+        Assertions.assertInstanceOf(DataError.class, response.getBody());
         DataError errorResponse = (DataError) response.getBody();
         Assertions.assertEquals(HttpStatus.CONFLICT.value(), errorResponse.getStatus());
     }
@@ -84,7 +84,7 @@ class AuthServiceTestIT extends BaseTest {
         // then
         Assertions.assertNotNull(response);
         Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        Assertions.assertTrue(response.getBody() instanceof DataSuccess);
+        Assertions.assertInstanceOf(DataSuccess.class, response.getBody());
         DataSuccess success = (DataSuccess) response.getBody();
         Assertions.assertEquals(HttpStatus.CREATED.value(), success.getStatus());
     }
