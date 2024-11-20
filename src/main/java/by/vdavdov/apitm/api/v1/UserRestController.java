@@ -2,6 +2,7 @@ package by.vdavdov.apitm.api.v1;
 
 import by.vdavdov.apitm.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,8 @@ public class UserRestController {
 
     @Operation(
             summary = "Получение всех пользователей для администратора",
-            description = "Пользователь с правами администратора может получить всех пользователей"
+            description = "Пользователь с правами администратора может получить всех пользователей",
+            security = @SecurityRequirement(name = "bearer-token")
     )
     @GetMapping("/api/v1/users")
     public ResponseEntity<?> getAllUsers(HttpServletRequest request) {
@@ -27,7 +29,8 @@ public class UserRestController {
 
     @Operation(
             summary = "Удаление пользователя по айди, доступно только для админа",
-            description = "Позволяет удалить пользователя по айди из урла"
+            description = "Позволяет удалить пользователя по айди из урла",
+            security = @SecurityRequirement(name = "bearer-token")
     )
     @DeleteMapping("/api/v1/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable("id") Long id, HttpServletRequest request) {

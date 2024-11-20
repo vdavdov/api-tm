@@ -3,6 +3,7 @@ package by.vdavdov.apitm.api.v1;
 import by.vdavdov.apitm.model.dtos.CommentDto;
 import by.vdavdov.apitm.services.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,12 @@ public class CommentRestController {
 
     @Operation(
             summary = "Позволяет добавлять комментарии к задаче",
-            description = "Метод позволяет комментировать задачи, в которых пользователь назначен автором или исполнителем(админу можно)"
+            description = "Метод позволяет комментировать задачи, в которых пользователь назначен автором или исполнителем(админу можно), пример запроса: \n " +
+                    "{\n" +
+                    "  \"text\": \"string\",\n" +
+                    "  \"taskId\": 0,\n" +
+                    "}",
+            security = @SecurityRequirement(name = "bearer-token")
     )
     @PostMapping("/api/v1/comments")
     public ResponseEntity<?> createComment(@RequestBody CommentDto commentDto, HttpServletRequest request) {

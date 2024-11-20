@@ -34,11 +34,15 @@ public class TaskService {
 
     public ResponseEntity<?> createNewTask(@RequestBody TaskDto taskDto, HttpServletRequest request) {
         Task task = new Task();
-        task.setAssignee(userService
-                .findByEmail(taskDto.getAssigneeEmail())
-                .orElseThrow(() -> new RuntimeException(
-                        String.format("Assignee with email %s not found", taskDto.getAssigneeEmail())
-                )));
+        try {
+            task.setAssignee(userService
+                    .findByEmail(taskDto.getAssigneeEmail())
+                    .orElseThrow(() -> new RuntimeException(
+                            String.format("Assignee with email %s not found", taskDto.getAssigneeEmail())
+                    )));
+        } catch (RuntimeException e) {
+            return  new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), USER_NOT_FOUND), HttpStatus.NOT_FOUND);
+        }
         task.setDescription(taskDto.getDescription());
         task.setTitle(taskDto.getTitle());
         task.setPriority(Priority.valueOf(taskDto.getPriority()));
@@ -103,7 +107,11 @@ public class TaskService {
                                                 String priority,
                                                 String status) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Task> tasks = taskRepository.findTasksByUserEmail(userEmail, priority, status, pageRequest);
+
+        Priority priorityEnum = (priority == null || priority.isEmpty()) ? null : Priority.valueOf(priority.toUpperCase());
+        Status statusEnum = (status == null || status.isEmpty()) ? null : Status.valueOf(status.toUpperCase());
+
+        Page<Task> tasks = taskRepository.findTasksByUserEmail(userEmail, priorityEnum, statusEnum, pageRequest);
         if (tasks.isEmpty()) {
             return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), TASK_NOT_FOUND), HttpStatus.NOT_FOUND);
         }
@@ -119,7 +127,7 @@ public class TaskService {
             if(taskRepository.findById(id).isPresent()) {
                 Task task = taskRepository.findById(id).get();
                 taskRepository.deleteById(id);
-                return ResponseEntity.ok(task);
+                return ResponseEntity.accepted().build();
             } else {
                 return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), TASK_NOT_FOUND), HttpStatus.NOT_FOUND);
             }

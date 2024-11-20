@@ -3,8 +3,12 @@ package by.vdavdov.apitm.api.v1;
 import by.vdavdov.apitm.model.dtos.TaskDto;
 import by.vdavdov.apitm.services.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +23,18 @@ public class TaskRestController {
 
     @Operation(
             summary = "Создает новую задачу",
-            description = "В качестве email автора использует емайл создателя"
+            description = "В качестве email автора использует емайл создателя \n " +
+                    "PRIORITY {LOW, MEDIUM, HIGH} \n " +
+                    "STATUS {PENDING, IN_PROGRESS, COMPLETED} \n" +
+                    " Пример запроса: \n" +
+                    "{\n" +
+                    "  \"title\": \"tittle\",\n" +
+                    "  \"description\": \"description\",\n" +
+                    "  \"status\": \"PENDING\",\n" +
+                    "  \"priority\": \"HIGH\",\n" +
+                    "  \"assigneeEmail\": \"assignee@gmail.com\"\n" +
+                    "}",
+            security = @SecurityRequirement(name = "bearer-token")
     )
     @PostMapping("/api/v1/tasks")
     public ResponseEntity<?> createNewTask(@RequestBody TaskDto taskDto, HttpServletRequest request) {
@@ -28,7 +43,17 @@ public class TaskRestController {
 
     @Operation(
             summary = "Изменить существующую задачу по айди",
-            description = "Изменить существующую задачу по айди, задачу может менять только автор, исполнитель или админ"
+            description = "Изменить существующую задачу по айди, задачу может менять только автор, исполнитель или админ." +
+                    "\n Пример запроса \n" +
+                    "{\n" +
+                    "  \"id\": 9,\n" +
+                    "  \"title\": \"string\",\n" +
+                    "  \"description\": \"string\",\n" +
+                    "  \"status\": \"IN_PROGRESS\",\n" +
+                    "  \"priority\": \"MEDIUM\",\n" +
+                    "  \"assigneeEmail\": \"admin\",\n" +
+                    "}",
+            security = @SecurityRequirement(name = "bearer-token")
     )
     @PutMapping("api/v1/tasks")
     public ResponseEntity<?> updateTask(@RequestBody TaskDto taskDto, HttpServletRequest request) {
@@ -37,7 +62,8 @@ public class TaskRestController {
 
     @Operation(
             summary = "Получить все задачи исполнителя/автора",
-            description = "Получить все задачи исполнителя/автора по его емейлу, с пагинацией"
+            description = "Получить все задачи исполнителя/автора по его емейлу, с пагинацией",
+            security = @SecurityRequirement(name = "bearer-token")
     )
     @GetMapping("api/v1/tasks")
     public ResponseEntity<?> getTasksByAssignee(@RequestParam String userEmail,
@@ -48,6 +74,11 @@ public class TaskRestController {
         return taskService.getTasksByAssignee(userEmail, page, limit, priority, status);
     }
 
+    @Operation(
+            summary = "Удаляет задачу по айди из урла",
+            description = "Позволяет удалять задачу по айди из урла, удалить может только админ",
+            security = @SecurityRequirement(name = "bearer-token")
+    )
     @DeleteMapping("api/v1/tasks/{id}")
     public ResponseEntity<?> deleteTask(@PathVariable Long id, HttpServletRequest request) {
         return taskService.deleteTask(id, request);
