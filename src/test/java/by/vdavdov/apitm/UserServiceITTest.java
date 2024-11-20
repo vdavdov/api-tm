@@ -1,4 +1,4 @@
-package by.vdavdov.apitm.services;
+package by.vdavdov.apitm;
 
 import by.vdavdov.apitm.constants.RestConstants;
 import by.vdavdov.apitm.messages.DataError;
@@ -6,6 +6,8 @@ import by.vdavdov.apitm.messages.DataSuccess;
 import by.vdavdov.apitm.model.dtos.RegistrationUserDto;
 import by.vdavdov.apitm.model.dtos.UserDto;
 import by.vdavdov.apitm.model.entities.User;
+import by.vdavdov.apitm.services.AuthService;
+import by.vdavdov.apitm.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +20,7 @@ import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
 
-class UserServiceTestIT extends BaseTest {
+class UserServiceITTest extends BaseTest {
 
     private final String jwtTokenAdmin = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiZXhwIjoxODE4NDY4MzY3LCJpYXQiOjE3MzIwNjgzNjd9.95NmVFGt_eK18LEU8_S3XshPcNaoNLq9niLpC-t11Lg";
     private final String jwtTokenUser = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhdXRob3IiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiZXhwIjoxODE4NDY4NzY0LCJpYXQiOjE3MzIwNjg3NjR9.mbtH8RT50O0rLLOb0vHo4G4ng2sghyzW_mCWKQDid6M";

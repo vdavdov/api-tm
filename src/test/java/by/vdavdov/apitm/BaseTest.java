@@ -1,4 +1,4 @@
-package by.vdavdov.apitm.services;
+package by.vdavdov.apitm;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;

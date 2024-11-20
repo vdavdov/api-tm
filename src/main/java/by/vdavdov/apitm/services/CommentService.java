@@ -1,6 +1,5 @@
 package by.vdavdov.apitm.services;
 
-import by.vdavdov.apitm.constants.RestConstants;
 import by.vdavdov.apitm.messages.DataError;
 import by.vdavdov.apitm.model.dtos.CommentDto;
 import by.vdavdov.apitm.model.entities.Comment;

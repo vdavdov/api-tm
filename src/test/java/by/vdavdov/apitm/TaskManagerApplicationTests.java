@@ -1,6 +1,5 @@
 package by.vdavdov.apitm;
 
-import by.vdavdov.apitm.services.BaseTest;
 import org.junit.jupiter.api.Test;
 
 

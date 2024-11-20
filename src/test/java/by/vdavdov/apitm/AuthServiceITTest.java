@@ -1,4 +1,4 @@
-package by.vdavdov.apitm.services;
+package by.vdavdov.apitm;
 
 import by.vdavdov.apitm.constants.RestConstants;
 import by.vdavdov.apitm.messages.DataError;
@@ -6,6 +6,8 @@ import by.vdavdov.apitm.messages.DataSuccess;
 import by.vdavdov.apitm.model.dtos.JwtRequest;
 import by.vdavdov.apitm.model.dtos.JwtResponse;
 import by.vdavdov.apitm.model.dtos.RegistrationUserDto;
+import by.vdavdov.apitm.services.AuthService;
+import by.vdavdov.apitm.services.UserService;
 import by.vdavdov.apitm.utils.JwtTokenUtils;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
@@ -17,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 
 @Transactional
-class AuthServiceTestIT extends BaseTest {
+class AuthServiceITTest extends BaseTest {
     @Autowired
     private AuthService authService;
 
