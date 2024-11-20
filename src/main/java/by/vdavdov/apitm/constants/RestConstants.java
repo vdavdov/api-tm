@@ -11,4 +11,5 @@ public class RestConstants {
     public static final String USER_NOT_FOUND = "User doesnt exist!";
     public static final String TASK_NOT_FOUND = "Task doesnt exist!";
     public static final String HAVE_NOT_PERMISSION = "You do not have permission to perform this action!";
+    public static final String ASSIGNEE_NOT_FOUND = "Assignee not found";
 }

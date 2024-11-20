@@ -46,7 +46,7 @@ public class CommentService {
     private ResponseEntity<?> saveComment(CommentDto commentDto, String authorEmail, Task task) {
         Comment comment = new Comment();
         comment.setText(commentDto.getText());
-        comment.setUser(userService.findByEmail(authorEmail).get());
+        comment.setUser(userService.findByEmail(authorEmail).get()); //ранее до вызова есть проверка
 
         task.getComments().add(comment);
         commentRepository.save(comment);

@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.Objects;
 import java.util.Optional;
 
+import static by.vdavdov.apitm.constants.RestConstants.*;
+
 @Service
 @RequiredArgsConstructor
 public class TaskService {
@@ -41,9 +43,13 @@ public class TaskService {
         task.setTitle(taskDto.getTitle());
         task.setPriority(Priority.valueOf(taskDto.getPriority()));
         task.setStatus(Status.valueOf(taskDto.getStatus()));
-        task.setAuthor(userService
-                .findByEmail(jwtTokenUtils
-                        .getEmail(jwtTokenUtils.getTokenFromRequest(request))).get());
+        if (userService.findByEmail(jwtTokenUtils.getEmail(jwtTokenUtils.getTokenFromRequest(request))).isPresent()) {
+            task.setAuthor(userService
+                    .findByEmail(jwtTokenUtils
+                            .getEmail(jwtTokenUtils.getTokenFromRequest(request))).get());
+        } else {
+            return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), USER_NOT_FOUND), HttpStatus.NOT_FOUND);
+        }
         Task save = taskRepository.save(task);
         return ResponseEntity.ok(new NewTaskDto(
                 String.valueOf(save.getId()),
@@ -75,14 +81,14 @@ public class TaskService {
                     taskToUpdate.setAssignee(userService.findByEmail(taskDto.getAssigneeEmail()).get());
                     taskRepository.save(taskToUpdate);
                 } else {
-                    return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), "Assignee not found"), HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), ASSIGNEE_NOT_FOUND), HttpStatus.NOT_FOUND);
                 }
             } else {
-                return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), "You can't change strangers tasks"), HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), IMPOSSIBLE_UPDATE_STRANGERS_TASKS), HttpStatus.FORBIDDEN);
             }
 
         } else {
-            return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), "Task not found"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), TASK_NOT_FOUND), HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(new NewTaskDto(String.valueOf(taskDto.getId()),
                 taskDto.getTitle(),
@@ -99,7 +105,7 @@ public class TaskService {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Task> tasks = taskRepository.findTasksByUserEmail(userEmail, priority, status, pageRequest);
         if (tasks.isEmpty()) {
-            return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), "Task not found"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), TASK_NOT_FOUND), HttpStatus.NOT_FOUND);
         }
 
         return ResponseEntity.ok(converterDto.convertToDtoPage(tasks).getContent());
@@ -109,15 +115,15 @@ public class TaskService {
     public ResponseEntity<?> deleteTask(Long id, HttpServletRequest request) {
         String token = jwtTokenUtils.getTokenFromRequest(request);
 
-        if(jwtTokenUtils.getRoles(token).contains("ROLE_ADMIN")) {
+        if(jwtTokenUtils.getRoles(token).contains(ADMIN)) {
             if(taskRepository.findById(id).isPresent()) {
                 Task task = taskRepository.findById(id).get();
                 taskRepository.deleteById(id);
                 return ResponseEntity.ok(task);
             } else {
-                return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), "Task not found"), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), TASK_NOT_FOUND), HttpStatus.NOT_FOUND);
             }
-        } return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), "You can't delete task"), HttpStatus.FORBIDDEN);
+        } return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), HAVE_NOT_PERMISSION), HttpStatus.FORBIDDEN);
     }
 
 
