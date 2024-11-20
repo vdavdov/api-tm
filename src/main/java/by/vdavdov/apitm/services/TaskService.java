@@ -1,8 +1,8 @@
 package by.vdavdov.apitm.services;
 
-import by.vdavdov.apitm.exceptions.DataError;
-import by.vdavdov.apitm.model.constants.Priority;
-import by.vdavdov.apitm.model.constants.Status;
+import by.vdavdov.apitm.messages.DataError;
+import by.vdavdov.apitm.model.enums.Priority;
+import by.vdavdov.apitm.model.enums.Status;
 import by.vdavdov.apitm.model.dtos.NewTaskDto;
 import by.vdavdov.apitm.model.dtos.TaskDto;
 import by.vdavdov.apitm.model.entities.Task;
@@ -17,9 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -56,7 +54,7 @@ public class TaskService {
                 ));
     }
 
-    public ResponseEntity<?> updateTask(@RequestBody TaskDto taskDto, HttpServletRequest request) {
+    public ResponseEntity<?> updateTask(TaskDto taskDto, HttpServletRequest request) {
         String token = jwtTokenUtils.getTokenFromRequest(request);
         String emailFromRequest = jwtTokenUtils.getEmail(token);
         String roleFromRequest = jwtTokenUtils.getRoles(token).get(0);
@@ -93,11 +91,11 @@ public class TaskService {
                 taskDto.getAssigneeEmail()));
     }
 
-    public ResponseEntity<?> getTasksByAssignee(@RequestParam String userEmail,
-                                                @RequestParam int page,
-                                                @RequestParam int size,
-                                                @RequestParam String priority,
-                                                @RequestParam String status) {
+    public ResponseEntity<?> getTasksByAssignee(String userEmail,
+                                                int page,
+                                                int size,
+                                                String priority,
+                                                String status) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Task> tasks = taskRepository.findTasksByUserEmail(userEmail, priority, status, pageRequest);
         if (tasks.isEmpty()) {
@@ -108,7 +106,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteTask(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<?> deleteTask(Long id, HttpServletRequest request) {
         String token = jwtTokenUtils.getTokenFromRequest(request);
 
         if(jwtTokenUtils.getRoles(token).contains("ROLE_ADMIN")) {

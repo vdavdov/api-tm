@@ -1,16 +1,16 @@
-package by.vdavdov.apitm.exceptions;
+package by.vdavdov.apitm.messages;
 
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class DataError {
+public class DataSuccess {
     private int status;
-    private String message;
+    private Object message;
     private Date date;
 
-    public DataError(int status, String message) {
+    public DataSuccess(int status, Object message) {
         this.status = status;
         this.message = message;
         this.date = new Date();

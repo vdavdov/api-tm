@@ -1,6 +1,7 @@
 package by.vdavdov.apitm.services;
 
-import by.vdavdov.apitm.exceptions.DataError;
+import by.vdavdov.apitm.messages.DataError;
+import by.vdavdov.apitm.messages.DataSuccess;
 import by.vdavdov.apitm.model.dtos.JwtRequest;
 import by.vdavdov.apitm.model.dtos.JwtResponse;
 import by.vdavdov.apitm.model.dtos.RegistrationUserDto;
@@ -15,7 +16,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import static by.vdavdov.apitm.constants.RestConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +26,7 @@ public class AuthService {
     private final JwtTokenUtils jwtTokenUtils;
     private final AuthenticationManager authenticationManager;
 
-    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
+    public ResponseEntity<?> createAuthToken(JwtRequest authRequest) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -32,21 +34,21 @@ public class AuthService {
                             authRequest.getPassword())
             );
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(new DataError(HttpStatus.UNAUTHORIZED.value(), "Wrong login or password"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new DataError(HttpStatus.UNAUTHORIZED.value(), WRONG_CREDENTIALS), HttpStatus.UNAUTHORIZED);
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getEmail());
         String token = jwtTokenUtils.generateToken(userDetails);
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
+    public ResponseEntity<?> createNewUser(RegistrationUserDto registrationUserDto) {
         if (!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())) {
-            return new ResponseEntity<>(new DataError(HttpStatus.BAD_REQUEST.value(), "Passwords do not match"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new DataError(HttpStatus.BAD_REQUEST.value(), PASSWORD_NOT_MATCH), HttpStatus.BAD_REQUEST);
         }
         if (userService.findByEmail(registrationUserDto.getEmail()).isPresent()) {
-            return new ResponseEntity<>(new DataError(HttpStatus.CONFLICT.value(), "User already exist"), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(new DataError(HttpStatus.CONFLICT.value(), USER_ALREADY_EXISTS), HttpStatus.CONFLICT);
         }
-        User user = userService.createNewUser(registrationUserDto);
-        return ResponseEntity.ok(new UserDto(user.getId(), user.getEmail()));
+        User user = userService.saveNewUser(registrationUserDto);
+        return new ResponseEntity<>(new DataSuccess(HttpStatus.CREATED.value(), new UserDto(user.getId(), user.getEmail())), HttpStatus.CREATED);
     }
 }

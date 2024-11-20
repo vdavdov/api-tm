@@ -1,10 +1,9 @@
 package by.vdavdov.apitm.services;
 
-import by.vdavdov.apitm.exceptions.DataError;
+import by.vdavdov.apitm.messages.DataError;
 import by.vdavdov.apitm.model.dtos.CommentDto;
 import by.vdavdov.apitm.model.entities.Comment;
 import by.vdavdov.apitm.model.entities.Task;
-import by.vdavdov.apitm.model.entities.User;
 import by.vdavdov.apitm.repositories.CommentRepository;
 import by.vdavdov.apitm.utils.JwtTokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,8 +40,6 @@ public class CommentService {
             return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), "Task with this id does not exist"), HttpStatus.NOT_FOUND);
         }
     }
-
-
 
     private ResponseEntity<?> saveComment(CommentDto commentDto, String authorEmail, Task task) {
         Comment comment = new Comment();

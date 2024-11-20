@@ -1,10 +1,10 @@
 package by.vdavdov.apitm;
 
+import by.vdavdov.apitm.services.BaseTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class TaskManagerApplicationTests {
+
+class TaskManagerApplicationTests extends BaseTest {
 
     @Test
     void contextLoads() {

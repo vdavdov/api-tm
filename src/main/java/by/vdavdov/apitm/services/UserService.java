@@ -1,6 +1,6 @@
 package by.vdavdov.apitm.services;
 
-import by.vdavdov.apitm.exceptions.DataError;
+import by.vdavdov.apitm.messages.DataError;
 import by.vdavdov.apitm.model.dtos.RegistrationUserDto;
 import by.vdavdov.apitm.model.entities.User;
 import by.vdavdov.apitm.repositories.UserRepository;
@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Objects;
@@ -39,7 +38,7 @@ public class UserService implements UserDetailsService {
         return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), "You have not permission to access this resource"), HttpStatus.FORBIDDEN);
     }
 
-    public User createNewUser(RegistrationUserDto registrationUserDto) {
+    public User saveNewUser(RegistrationUserDto registrationUserDto) {
         User user = new User();
         user.setEmail(registrationUserDto.getEmail());
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
@@ -65,7 +64,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteUserById(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<?> deleteUserById(Long id, HttpServletRequest request) {
         String token = jwtTokenUtils.getTokenFromRequest(request);
         if (userRepository.findById(id).isPresent()) {
             if (jwtTokenUtils.getRoles(token).get(0).contains("ROLE_ADMIN")) {

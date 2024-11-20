@@ -1,7 +1,7 @@
 package by.vdavdov.apitm.model.entities;
 
-import by.vdavdov.apitm.model.constants.Priority;
-import by.vdavdov.apitm.model.constants.Status;
+import by.vdavdov.apitm.model.enums.Priority;
+import by.vdavdov.apitm.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
