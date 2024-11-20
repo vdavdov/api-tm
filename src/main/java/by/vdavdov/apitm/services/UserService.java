@@ -1,5 +1,6 @@
 package by.vdavdov.apitm.services;
 
+import by.vdavdov.apitm.constants.RestConstants;
 import by.vdavdov.apitm.messages.DataError;
 import by.vdavdov.apitm.model.dtos.RegistrationUserDto;
 import by.vdavdov.apitm.model.entities.User;
@@ -22,6 +23,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static by.vdavdov.apitm.constants.RestConstants.*;
+
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
@@ -32,10 +35,10 @@ public class UserService implements UserDetailsService {
 
     public ResponseEntity<?> getAllUsers(HttpServletRequest request) {
         String token = jwtTokenUtils.getTokenFromRequest(request);
-        if (Objects.equals(jwtTokenUtils.getRoles(token).get(0), "ROLE_ADMIN")) {
+        if (Objects.equals(jwtTokenUtils.getRoles(token).get(0), ADMIN)) {
             return ResponseEntity.ok(userRepository.findAll());
         }
-        return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), "You have not permission to access this resource"), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), HAVE_NOT_PERMISSION), HttpStatus.FORBIDDEN);
     }
 
     public User saveNewUser(RegistrationUserDto registrationUserDto) {
@@ -67,13 +70,13 @@ public class UserService implements UserDetailsService {
     public ResponseEntity<?> deleteUserById(Long id, HttpServletRequest request) {
         String token = jwtTokenUtils.getTokenFromRequest(request);
         if (userRepository.findById(id).isPresent()) {
-            if (jwtTokenUtils.getRoles(token).get(0).contains("ROLE_ADMIN")) {
+            if (jwtTokenUtils.getRoles(token).get(0).contains(ADMIN)) {
                 userRepository.deleteById(id);
                 return ResponseEntity.accepted().build();
             }
         } else {
-            return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), "User not found"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), USER_NOT_FOUND), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), "You have not permission to delete this resource"), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), HAVE_NOT_PERMISSION), HttpStatus.FORBIDDEN);
     }
 }

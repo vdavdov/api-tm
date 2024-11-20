@@ -1,5 +1,6 @@
 package by.vdavdov.apitm.services;
 
+import by.vdavdov.apitm.constants.RestConstants;
 import by.vdavdov.apitm.messages.DataError;
 import by.vdavdov.apitm.model.dtos.CommentDto;
 import by.vdavdov.apitm.model.entities.Comment;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import static by.vdavdov.apitm.constants.RestConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,18 +29,18 @@ public class CommentService {
         if (taskService.findTaskById(commentDto.getTaskId()).isPresent()) {
             Task task = taskService.findTaskById(commentDto.getTaskId()).get();
             if (userService.findByEmail(authorEmail).isPresent()) {
-                if (jwtTokenUtils.getRoles(token).get(0).contains("ROLE_ADMIN")) {
+                if (jwtTokenUtils.getRoles(token).get(0).contains(ADMIN)) {
                     return saveComment(commentDto, authorEmail, task);
                 } else if (authorEmail.equals(task.getAuthor().getEmail()) || authorEmail.equals(task.getAssignee().getEmail())) {
                     return saveComment(commentDto, authorEmail, task);
                 } else {
-                    return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), "You cant add comment for strangers tasks"), HttpStatus.FORBIDDEN);
+                    return new ResponseEntity<>(new DataError(HttpStatus.FORBIDDEN.value(), IMPOSSIBLE_UPDATE_STRANGERS_TASKS), HttpStatus.FORBIDDEN);
                 }
             } else {
-                return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), "This user doesnt exist"), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), USER_NOT_FOUND), HttpStatus.NOT_FOUND);
             }
         } else {
-            return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), "Task with this id does not exist"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new DataError(HttpStatus.NOT_FOUND.value(), TASK_NOT_FOUND), HttpStatus.NOT_FOUND);
         }
     }
 
