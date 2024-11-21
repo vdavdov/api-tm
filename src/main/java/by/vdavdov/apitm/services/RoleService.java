@@ -1,6 +1,5 @@
 package by.vdavdov.apitm.services;
 
-import by.vdavdov.apitm.constants.RestConstants;
 import by.vdavdov.apitm.model.entities.Role;
 import by.vdavdov.apitm.repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;
